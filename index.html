@@ -285,13 +285,14 @@ async function submit(){
       ),
       body: JSON.stringify(row)
     });
-    if (!res.ok) throw new Error("Status " + res.status);
+    if (!res.ok) { let t = ""; try { t = await res.text(); } catch(_){} throw new Error("Status " + res.status + " " + t.slice(0,300)); }
     try { localStorage.setItem("cmi_done","1"); } catch(e){}
     thanks(score, quiz.length);
   } catch (e){
     console.error(e);
     show(`<h2>We could not send your answers</h2>
       <p>Please check that you have signal or data, and try again.</p>
+      <p class="hint" style="font-size:12px;word-break:break-word">Technical details: ${esc(e.message)}</p>
       <div class="nav"><button class="btn primary" id="retry">Try again</button></div>`);
     document.getElementById("retry").onclick = submit;
   }
