@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Count Me In – Servest Colleague Survey</title>
+<style>
+  :root{
+    --navy:#03005B; --mid:#4A47A3; --tint:#ECEBF6; --soft:#D6D4EC;
+    --ink:#1F1F2E; --grey:#5F5F6E; --ok:#15803D; --okt:#E6F4EA; --bad:#B4380B; --badt:#FDEDE3;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;background:#F4F4FA;color:var(--ink);font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+  header{background:var(--navy);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+  header img{height:34px;width:auto;display:block}
+  header span{color:var(--soft);font-size:13px;font-weight:bold;letter-spacing:.08em}
+  .bar{height:6px;background:var(--soft)}
+  .bar i{display:block;height:100%;width:0;background:var(--mid);transition:width .3s}
+  main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+  .card{background:#fff;border-radius:var(--radius);padding:22px 20px;box-shadow:0 1px 3px rgba(3,0,91,.08)}
+  .screen{display:none}
+  .screen.active{display:block}
+  h1:focus,h2:focus{outline:none}
+  h1{color:var(--navy);font-size:26px;margin:0 0 12px;line-height:1.2}
+  h2{color:var(--navy);font-size:21px;margin:0 0 6px;line-height:1.3}
+  h3{color:var(--navy);font-size:18px;margin:20px 0 6px}
+  .kicker{color:var(--mid);font-weight:bold;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+  .hint{color:var(--grey);font-size:15px;margin:0 0 14px}
+  p{margin:0 0 12px}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--tint);border:2px solid transparent;border-radius:12px;padding:14px 14px;font-size:17px;color:var(--ink);cursor:pointer;font-family:inherit}
+  .opt .dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid var(--mid);background:#fff;position:relative}
+  .opt.multi .dot{border-radius:5px}
+  .opt.sel{border-color:var(--navy);background:#E2E1F3}
+  .opt.sel .dot{background:var(--navy);border-color:var(--navy)}
+  .opt.sel .dot::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .opt:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--mid);outline-offset:2px}
+  .opt.correct{border-color:var(--ok);background:var(--okt)}
+  .opt.wrong{border-color:var(--bad);background:var(--badt)}
+  .opt[disabled]{cursor:default}
+  .feedback{display:none;margin-top:16px;border-radius:12px;padding:14px 16px}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--okt)}
+  .feedback.bad{background:var(--badt)}
+  .feedback b{display:block;font-size:18px;margin-bottom:4px}
+  .feedback.ok b{color:var(--ok)} .feedback.bad b{color:var(--bad)}
+  select,input[type=text]{width:100%;font-size:17px;padding:14px;border-radius:12px;border:2px solid var(--soft);background:#fff;color:var(--ink);font-family:inherit;margin-top:10px}
+  .nav{display:flex;gap:10px;margin-top:22px}
+  .btn{flex:1;font-size:18px;font-weight:bold;padding:15px;border-radius:12px;border:0;cursor:pointer;font-family:inherit}
+  .btn.primary{background:var(--navy);color:#fff}
+  .btn.primary[disabled]{background:#A9A8C8;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--navy);border:2px solid var(--soft);flex:0 0 auto;padding:15px 18px}
+  .promise{list-style:none;padding:0;margin:14px 0 0}
+  .promise li{display:flex;gap:10px;align-items:flex-start;padding:8px 0}
+  .promise li::before{content:"✓";flex:0 0 26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:bold;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .score{background:var(--navy);color:#fff;border-radius:12px;padding:16px;text-align:center;margin:14px 0}
+  .score strong{display:block;font-size:34px}
+  .info{background:var(--tint);border-radius:12px;padding:14px 16px;margin-top:12px}
+  .info ul{margin:6px 0 0;padding-left:20px}
+  .info li{margin-bottom:4px}
+  .tests{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .tests div{background:#fff;border-radius:10px;padding:10px 12px}
+  .err{color:var(--bad);font-size:15px;margin-top:10px;display:none}
+  .err.show{display:block}
+  footer{text-align:center;color:var(--grey);font-size:13px;padding:0 16px 30px}
+  .qnum{color:var(--grey);font-size:14px;margin-bottom:4px}
+</style>
+</head>
+<body>
+<header>
+  <img src="data:image/png;base64,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" alt="Servest">
+  <span>COUNT ME IN</span>
+</header>
+<div class="bar" aria-hidden="true"><i id="progress"></i></div>
+
+<main>
+  <div class="card">
+    <div id="screens"></div>
+  </div>
+</main>
+<footer>Your answers are anonymous. Run for Servest by Global Business Solutions.</footer>
+
+<script>
+/* =====================================================================
+   1. SETTINGS – paste your Supabase details here (see the setup guide)
+   ===================================================================== */
+const SUPABASE_URL = "https://unxhglbfpqcxdhiztogw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_cpY852ynt-IIPsgq0w7rzg_hn_JmZFf";   // starts with sb_publishable_ (or the older anon key starting with eyJ)
+const TABLE = "survey_responses";
+const SURVEY_CLOSED = false;          // set to true after 4 December to close the survey
+
+/* =====================================================================
+   2. QUESTIONS
+   ===================================================================== */
+const SITES = ["Netcare","Clicks","Dischem","Shoprite-Checkers","Sasol","Ardagh Glass Packaging","Stellenbosch University","Seriti","SANBS","WNS","NWU","Tongaat Hulett Sugar Limited","AECI","ABF Sugar","MTN","Redefine","Virgin Active","Val de Vie","Pecanwood HOA","Teraco Data Environments Pty Ltd","Komatsu South Africa","Saint John's College","Adidas","Glencore Rhovan","Dipalopalo Fm Solutions - Stats SA","Plateaux Mining Service PTY Ltd","Tsogo Sun Portfolio","DPWI - Telkom Towers","DPWI - 2 Military Hospital"];
+
+const TF = ["True","False","Not sure"];
+const Q = [
+  {id:"site", part:"About your work", type:"site", text:"Where do you work?", hint:"Choose the client site you work at."},
+  {id:"work_type", part:"About your work", type:"single", text:"What kind of work do you do?",
+   options:["I work on a client site (for example cleaning, hygiene, security, catering, maintenance)","I work in an office","I am a supervisor or manager","Other"]},
+  {id:"tenure", part:"About your work", type:"single", text:"How long have you worked at Servest?", options:["Less than 1 year","1 to 5 years","More than 5 years"]},
+
+  {id:"q4", part:"What do you know?", type:"quiz", text:"A person only has a disability if they use a wheelchair.", answer:"False",
+   why:"Many disabilities are not visible. A disability can be physical, sensory, mental or a long-term illness."},
+  {id:"q5", part:"What do you know?", type:"quiz", text:"Some illnesses you cannot see, like diabetes, epilepsy or high blood pressure, can be a disability.", answer:"True",
+   why:"Long-term illnesses can count as a disability if they limit a person at work."},
+  {id:"q6", part:"What do you know?", type:"quiz", text:"If your eyes are still weak even when you wear glasses, this can be a disability.", answer:"True",
+   why:"Eyesight that is not fully fixed by glasses or contact lenses can count as a disability."},
+  {id:"q7", part:"What do you know?", type:"quiz", text:"Problems like depression or very bad anxiety can be a disability.", answer:"True",
+   why:"Long-term mental health problems can count as a disability."},
+  {id:"q8", part:"What do you know?", type:"quiz", text:"If you tell Servest you have a disability, you can lose your job.", answer:"False",
+   why:"The law protects you. It is unfair and against the law to dismiss someone because of a disability."},
+  {id:"q9", part:"What do you know?", type:"quiz", text:"Your information about your disability must be kept private.", answer:"True",
+   why:"Health information is special personal information under POPIA. Only a few authorised people may see it."},
+  {id:"q10", part:"What do you know?", type:"quiz", text:"If you have a disability, Servest can make changes to help you do your work better.", answer:"True",
+   why:"This is called reasonable accommodation, for example special equipment or changes to work times."},
+  {id:"q11", part:"What do you know?", type:"quiz", text:"If you have a disability, you can still get a promotion.", answer:"True",
+   why:"A disability must not stop you from being promoted. Unfair discrimination is against the law."},
+
+  {id:"know_how", part:"How do you feel?", type:"single", text:"Do you know how to tell Servest if you have a disability?", options:["Yes","No","Not sure"]},
+  {id:"feel_safe", part:"How do you feel?", type:"single", text:"If you had a disability, would you feel safe to tell Servest?", options:["Yes","No","Not sure"]},
+  {id:"worries", part:"How do you feel?", type:"multi", text:"What makes you worried?", hint:"You can choose more than one.",
+   showIf: a => a.feel_safe === "No" || a.feel_safe === "Not sure",
+   options:["I am afraid people will treat me differently","I am afraid people will laugh at me or bully me","I am afraid I will lose my job or not get a promotion","I do not know who will see my information","I did not know my health problem could count as a disability","Other"]},
+  {id:"may_have", part:"How do you feel?", type:"single", text:"After this survey, do you think you might have a health condition that could count as a disability?",
+   hint:"You do not have to answer. Your answer is anonymous.", optional:true, options:["Yes","No","Not sure","I prefer not to say"]},
+  {id:"want_info", part:"How do you feel?", type:"single", text:"Would you like to know more about how to tell Servest in private?", options:["Yes","No"]},
+];
+
+/* =====================================================================
+   3. APP
+   ===================================================================== */
+const answers = {};
+const quizLocked = {};
+let idx = -1; // -1 = welcome
+const root = document.getElementById("screens");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function visibleQuestions(){ return Q.filter(q => !q.showIf || q.showIf(answers)); }
+function setProgress(){
+  const vq = visibleQuestions();
+  const pos = idx < 0 ? 0 : idx >= vq.length ? 100 : Math.round((idx / vq.length) * 100);
+  document.getElementById("progress").style.width = pos + "%";
+}
+function show(html){ root.innerHTML = '<section class="screen active">' + html + '</section>'; setProgress(); window.scrollTo(0,0); const h = root.querySelector("h1,h2"); if(h){h.setAttribute("tabindex","-1"); h.focus({preventScroll:true});} }
+
+function welcome(){
+  idx = -1;
+  if (SURVEY_CLOSED){
+    show('<div class="kicker">Count Me In</div><h1>This survey is now closed</h1><p>Thank you for your interest. In January 2027, look out for the Count Me In videos and QR-code posters at your site.</p>');
+    return;
+  }
+  let done = false; try { done = localStorage.getItem("cmi_done") === "1"; } catch(e){}
+  show(`
+    <div class="kicker">Count Me In</div>
+    <h1>Tell us what you know</h1>
+    <p>Hello! Thank you for taking part.</p>
+    <p>This short survey is about disability at work. It takes about <b>5 minutes</b>.</p>
+    <ul class="promise">
+      <li><span><b>You do not give your name.</b> Nobody will know your answers.</span></li>
+      <li><span>There are no wrong answers. As you go, you will see the right answers so you can learn more.</span></li>
+    </ul>
+    ${done ? '<p class="hint" style="margin-top:14px">It looks like you have already answered this survey on this phone. Thank you! You do not need to answer it again.</p>' : ''}
+    <div class="nav"><button class="btn primary" id="start">Start the survey</button></div>`);
+  document.getElementById("start").onclick = () => { idx = 0; render(); };
+}
+
+function render(){
+  const vq = visibleQuestions();
+  if (idx >= vq.length) return submit();
+  const q = vq[idx];
+  const num = idx + 1, total = vq.length;
+  let body = "";
+  if (q.type === "site"){
+    const val = answers.site || "";
+    body = `<label for="site" class="hint">${esc(q.hint)}</label>
+      <select id="site"><option value="">Choose your site…</option>
+      ${SITES.map(s => `<option ${val===s?"selected":""}>${esc(s)}</option>`).join("")}
+      <option value="Other" ${val==="Other"?"selected":""}>Other</option></select>
+      <input type="text" id="siteOther" maxlength="80" placeholder="Type the name of your site" style="display:${val==="Other"?"block":"none"}" value="${esc(answers.site_other||"")}" aria-label="Name of your site">`;
+  } else {
+    const multi = q.type === "multi";
+    const opts = q.type === "quiz" ? TF : q.options;
+    const cur = answers[q.id];
+    body = (q.hint ? `<p class="hint">${esc(q.hint)}</p>` : "") +
+      `<div class="opts" role="${multi?"group":"radiogroup"}" aria-label="${esc(q.text)}">` +
+      opts.map(o => {
+        const sel = multi ? (cur||[]).includes(o) : cur === o;
+        let cls = "opt" + (multi?" multi":"") + (sel?" sel":"");
+        if (q.type === "quiz" && quizLocked[q.id]){
+          if (o === q.answer) cls += " correct"; else if (sel) cls += " wrong";
+        }
+        return `<button type="button" class="${cls}" data-v="${esc(o)}" role="${multi?"checkbox":"radio"}" aria-checked="${sel}" ${q.type==="quiz"&&quizLocked[q.id]?"disabled":""}><span class="dot"></span><span>${esc(o)}</span></button>`;
+      }).join("") + `</div>` +
+      (multi ? `<input type="text" id="multiOther" maxlength="120" placeholder="Please tell us more (optional)" aria-label="Other worry" style="display:${(cur||[]).includes("Other")?"block":"none"}" value="${esc(answers.worries_other||"")}">` : "") +
+      (q.type === "quiz" ? `<div class="feedback" id="fb" aria-live="polite"></div>` : "");
+  }
+  show(`
+    <div class="kicker">${esc(q.part)}</div>
+    <div class="qnum">Question ${num} of ${total}</div>
+    <h2>${esc(q.text)}</h2>
+    ${body}
+    <div class="err" id="err">Please choose an answer to continue.</div>
+    <div class="nav">
+      <button class="btn ghost" id="back">Back</button>
+      <button class="btn primary" id="next">${num === total ? "Submit" : "Next"}</button>
+    </div>`);
+  wire(q);
+  if (q.type === "quiz" && quizLocked[q.id]) showFeedback(q);
+  updateNext(q);
+}
+
+function showFeedback(q){
+  const fb = document.getElementById("fb");
+  const right = answers[q.id] === q.answer;
+  const notSure = answers[q.id] === "Not sure";
+  fb.className = "feedback show " + (right ? "ok" : "bad");
+  fb.innerHTML = `<b>${right ? "Correct!" : notSure ? "The answer is: " + esc(q.answer) : "Not quite. The answer is: " + esc(q.answer)}</b>${esc(q.why)}`;
+}
+
+function wire(q){
+  document.getElementById("back").onclick = () => { if (idx === 0) welcome(); else { idx--; render(); } };
+  document.getElementById("next").onclick = () => {
+    if (!isAnswered(q)){ document.getElementById("err").classList.add("show"); return; }
+    idx++; render();
+  };
+  if (q.type === "site"){
+    const sel = document.getElementById("site"), other = document.getElementById("siteOther");
+    sel.onchange = () => { answers.site = sel.value; other.style.display = sel.value === "Other" ? "block" : "none"; if (sel.value==="Other") other.focus(); updateNext(q); };
+    other.oninput = () => { answers.site_other = other.value.trim(); updateNext(q); };
+    return;
+  }
+  root.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    const v = b.dataset.v;
+    if (q.type === "multi"){
+      const arr = answers[q.id] || [];
+      answers[q.id] = arr.includes(v) ? arr.filter(x => x !== v) : arr.concat(v);
+      if (!answers[q.id].includes("Other")) delete answers.worries_other;
+    } else {
+      if (q.type === "quiz" && quizLocked[q.id]) return;
+      answers[q.id] = v;
+      if (q.type === "quiz") quizLocked[q.id] = true;
+      if (q.id === "feel_safe" && v === "Yes"){ delete answers.worries; delete answers.worries_other; }
+    }
+    render();
+  });
+  const mo = document.getElementById("multiOther");
+  if (mo) mo.oninput = () => { answers.worries_other = mo.value.trim(); };
+}
+
+function isAnswered(q){
+  if (q.optional) return true;
+  if (q.type === "site") return answers.site && (answers.site !== "Other" || (answers.site_other||"").length > 1);
+  if (q.type === "multi") return (answers[q.id]||[]).length > 0;
+  return !!answers[q.id];
+}
+function updateNext(q){
+  const n = document.getElementById("next");
+  if (n) n.disabled = !isAnswered(q);
+}
+
+async function submit(){
+  const quiz = Q.filter(q => q.type === "quiz");
+  const score = quiz.filter(q => answers[q.id] === q.answer).length;
+  show(`<h2>Sending your answers…</h2><p class="hint">Please wait a moment.</p>`);
+  const row = {
+    site: answers.site, site_other: answers.site === "Other" ? (answers.site_other||null) : null,
+    work_type: answers.work_type, tenure: answers.tenure,
+    q4: answers.q4, q5: answers.q5, q6: answers.q6, q7: answers.q7, q8: answers.q8, q9: answers.q9, q10: answers.q10, q11: answers.q11,
+    quiz_score: score,
+    know_how_to_tell: answers.know_how, feel_safe: answers.feel_safe,
+    worries: answers.worries || null, worries_other: answers.worries_other || null,
+    may_have_condition: answers.may_have || null, want_more_info: answers.want_info
+  };
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
+      method: "POST",
+      headers: Object.assign(
+        { "apikey": SUPABASE_KEY, "Content-Type": "application/json", "Prefer": "return=minimal" },
+        SUPABASE_KEY.startsWith("eyJ") ? { "Authorization": "Bearer " + SUPABASE_KEY } : {}   // older "anon" keys also need this header
+      ),
+      body: JSON.stringify(row)
+    });
+    if (!res.ok) throw new Error("Status " + res.status);
+    try { localStorage.setItem("cmi_done","1"); } catch(e){}
+    thanks(score, quiz.length);
+  } catch (e){
+    console.error(e);
+    show(`<h2>We could not send your answers</h2>
+      <p>Please check that you have signal or data, and try again.</p>
+      <div class="nav"><button class="btn primary" id="retry">Try again</button></div>`);
+    document.getElementById("retry").onclick = submit;
+  }
+}
+
+function thanks(score, total){
+  document.getElementById("progress").style.width = "100%";
+  root.innerHTML = `<section class="screen active">
+    <div class="kicker">Count Me In</div>
+    <h1 tabindex="-1">Thank you!</h1>
+    <p>Your answers have been sent. Thank you for helping Servest make sure that everyone counts.</p>
+    <div class="score"><strong>${score} / ${total}</strong>right answers in "What do you know?"</div>
+
+    <h3>What is a disability?</h3>
+    <p>Ask yourself 3 questions. If the answer to all 3 is <b>yes</b>, it can be a disability:</p>
+    <div class="info"><div class="tests">
+      <div><b>1. Does it last?</b> It has lasted a year or more, or it keeps coming back.</div>
+      <div><b>2. Does it affect your body or mind?</b> Your body, seeing or hearing, learning, or your thoughts and feelings.</div>
+      <div><b>3. Does it make work much harder?</b> It makes your job, or getting ahead at work, much harder.</div>
+    </div></div>
+
+    <h3>Most disabilities are hidden</h3>
+    <div class="info">These can count if they pass the 3 questions:
+      <ul>
+        <li>Sugar diabetes, epilepsy, high blood pressure, HIV, cancer</li>
+        <li>Depression, anxiety, bipolar disorder</li>
+        <li>Hearing loss, or eyes that are still weak with glasses</li>
+        <li>A bad back, or metal plates or pins from an old injury</li>
+        <li>Dyslexia, ADHD and other learning problems</li>
+      </ul>
+    </div>
+
+    <h3>The law protects you</h3>
+    <ul class="promise">
+      <li><span>You cannot be fired, or skipped for promotion or training, because of a disability.</span></li>
+      <li><span>Bullying someone because of a disability is not allowed.</span></li>
+      <li><span>Your health information is private. Only a few authorised HR people may see it.</span></li>
+      <li><span>Servest can make changes to help you work, like breaks, equipment or different duties. This is called <b>reasonable accommodation</b>.</span></li>
+    </ul>
+
+    <h3>How to tell Servest</h3>
+    <div class="info">You choose the way that feels best for you:
+      <ul>
+        <li><b>Your manager or supervisor</b>, in private</li>
+        <li><b>An HR representative</b>, if you prefer not to speak to your manager</li>
+        <li><b>The Count Me In QR-code posters</b> at your site, coming in January 2027</li>
+      </ul>
+    </div>
+    <p style="margin-top:16px">Telling Servest is always <b>your choice</b>. You can close this page now.</p>
+  </section>`;
+  window.scrollTo(0,0);
+  root.querySelector("h1").focus({preventScroll:true});
+}
+
+welcome();
+</script>
+</body>
+</html>
